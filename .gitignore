@@ -1,0 +1,13 @@
+
+# Workflow runtime files — generated, do not commit
+plans/*/status/events.ndjson
+plans/*/status/item-status.json
+plans/*/status/item-status.json.bak
+plans/*/context/project-context-snapshot.md
+plans/*/reports/bootstrap-report.json
+plans/*/reports/readiness-report.json
+plans/*/reports/quality-gate-report.*
+plans/reports/branches/
+.claude/settings.local.json
+CLAUDE.md
+AGENTS.md

@@ -1,0 +1,17 @@
+{
+  "name": "proxy-digi",
+  "version": "1.0.0",
+  "private": true,
+  "main": "src/server.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node src/server.js"
+  },
+  "dependencies": {
+    "axios": "^1.7.2",
+    "express": "^4.19.2",
+    "http-proxy-middleware": "^2.0.6",
+    "pg": "^8.20.0"
+  }
+}

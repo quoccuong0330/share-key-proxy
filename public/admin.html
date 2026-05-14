@@ -1,0 +1,281 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Proxy Key Manager</title>
+    <style>
+      :root {
+        --bg: #0f172a;
+        --panel: #ffffff;
+        --panel-soft: #f8fafc;
+        --text: #0f172a;
+        --muted: #64748b;
+        --border: #e2e8f0;
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --danger: #dc2626;
+        --ok: #16a34a;
+      }
+
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: Inter, Arial, sans-serif; background: #f1f5f9; color: var(--text); }
+      button { border: 0; border-radius: 10px; padding: 10px 14px; cursor: pointer; font-weight: 700; background: var(--primary); color: #fff; }
+      button:hover { background: var(--primary-dark); }
+      button.secondary { background: #e2e8f0; color: var(--text); }
+      button.secondary:hover { background: #cbd5e1; }
+      button.danger { background: var(--danger); }
+      input, select { width: 100%; padding: 11px 12px; border: 1px solid var(--border); border-radius: 10px; font: inherit; background: #fff; }
+      label { display: grid; gap: 6px; font-size: 13px; font-weight: 700; color: #334155; }
+      code { background: #eef2ff; color: #3730a3; padding: 3px 7px; border-radius: 7px; }
+      table { border-collapse: collapse; width: 100%; }
+      th, td { border-bottom: 1px solid var(--border); padding: 12px; text-align: left; vertical-align: top; }
+      th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; background: var(--panel-soft); }
+      .login-shell { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: radial-gradient(circle at top left, #1e3a8a, var(--bg) 45%); }
+      .login-card { width: min(440px, 100%); background: var(--panel); border-radius: 22px; padding: 28px; box-shadow: 0 24px 80px rgba(15, 23, 42, .35); }
+      .login-card h1 { margin: 0 0 8px; font-size: 28px; }
+      .login-card p { margin: 0 0 22px; color: var(--muted); line-height: 1.5; }
+      .stack { display: grid; gap: 14px; }
+      .app-shell { display: none; min-height: 100vh; }
+      .topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 24px; background: var(--bg); color: #fff; }
+      .topbar h1 { margin: 0; font-size: 20px; }
+      .topbar p { margin: 4px 0 0; color: #cbd5e1; font-size: 13px; }
+      .content { padding: 24px; max-width: 1100px; margin: 0 auto; }
+      .card { background: var(--panel); border: 1px solid var(--border); border-radius: 18px; padding: 18px; box-shadow: 0 1px 2px rgba(15, 23, 42, .04); }
+      .card h2 { margin: 0 0 12px; font-size: 17px; }
+      .muted { color: var(--muted); font-size: 13px; line-height: 1.45; }
+      .new-key { display: none; border: 1px solid #bbf7d0; background: #f0fdf4; border-radius: 14px; padding: 12px; margin: 12px 0; }
+      .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+      .toolbar { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
+      .create-panel { display: none; margin-bottom: 16px; }
+      .key-output { min-width: min(520px, 100%); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
+      .table-wrap { overflow-x: auto; }
+      .error { display: none; color: var(--danger); background: #fef2f2; border: 1px solid #fecaca; padding: 10px 12px; border-radius: 10px; font-size: 13px; }
+      .empty { padding: 28px; color: var(--muted); text-align: center; }
+      @media (max-width: 900px) {
+        .topbar { align-items: flex-start; flex-direction: column; }
+      }
+    </style>
+  </head>
+  <body>
+    <section id="loginView" class="login-shell">
+      <form id="loginForm" class="login-card">
+        <h1>Admin Login</h1>
+        <p>Login để tạo proxy key cho Claude Code. Key tạo xong đưa user dùng làm <code>ANTHROPIC_AUTH_TOKEN</code>.</p>
+        <div class="stack">
+          <label>Username
+            <input id="adminUsername" type="text" autocomplete="username" value="admin" />
+          </label>
+          <label>Password
+            <input id="adminPassword" type="password" autocomplete="current-password" value="admin123" />
+          </label>
+          <div id="loginError" class="error">Sai login hoặc server chưa sẵn sàng.</div>
+          <button type="submit">Login</button>
+          <p class="muted">Default local: <code>admin/admin123</code>. Đổi bằng env <code>ADMIN_USERNAME</code>, <code>ADMIN_PASSWORD</code>.</p>
+        </div>
+      </form>
+    </section>
+
+    <section id="appView" class="app-shell">
+      <header class="topbar">
+        <div>
+          <h1>Proxy Key Manager</h1>
+          <p>Domain proxy → Digi upstream. Admin tạo key, user copy vào Claude Code settings.</p>
+        </div>
+        <div class="row">
+          <button id="refreshBtn" class="secondary">Refresh</button>
+          <button id="logoutBtn" class="danger">Logout</button>
+        </div>
+      </header>
+
+      <main class="content">
+        <section class="card">
+          <div class="toolbar">
+            <div>
+              <h2>Keys</h2>
+              <p class="muted">Copy key vào <code>ANTHROPIC_AUTH_TOKEN</code>. Revoke sẽ xoá key ngay.</p>
+            </div>
+            <button id="toggleCreateBtn" type="button">Create Key</button>
+          </div>
+
+          <div id="createPanel" class="create-panel">
+            <div class="stack">
+              <label>Default model
+                <input id="defaultModel" type="text" value="cx/gpt-5.5" />
+              </label>
+              <label>Allowed models
+                <input id="allowedModels" type="text" value="cx/gpt-5.5,cx/gpt-5.4,cx/gpt-5.3-codex" />
+              </label>
+              <label>Policy
+                <select id="forceModel">
+                  <option value="true">Force default model</option>
+                  <option value="false">Allow client model if allowlisted</option>
+                </select>
+              </label>
+              <div class="row">
+                <button id="createBtn" type="button">Create</button>
+                <button id="cancelCreateBtn" class="secondary" type="button">Cancel</button>
+              </div>
+            </div>
+          </div>
+
+          <div id="newKeyBox" class="new-key"></div>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Key</th>
+                  <th>Model</th>
+                  <th>Created</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="keysBody"></tbody>
+            </table>
+          </div>
+        </section>
+      </main>
+    </section>
+
+    <script>
+      const loginView = document.getElementById('loginView');
+      const appView = document.getElementById('appView');
+      const loginForm = document.getElementById('loginForm');
+      const loginError = document.getElementById('loginError');
+      const adminUsernameInput = document.getElementById('adminUsername');
+      const adminPasswordInput = document.getElementById('adminPassword');
+      const keysBody = document.getElementById('keysBody');
+      const newKeyBox = document.getElementById('newKeyBox');
+      const defaultModelInput = document.getElementById('defaultModel');
+      const allowedModelsInput = document.getElementById('allowedModels');
+      const forceModelInput = document.getElementById('forceModel');
+      const createPanel = document.getElementById('createPanel');
+
+      adminUsernameInput.value = localStorage.getItem('proxy_admin_username') || 'admin';
+      adminPasswordInput.value = localStorage.getItem('proxy_admin_password') || 'admin123';
+
+      function headers() {
+        return {
+          'x-admin-username': adminUsernameInput.value,
+          'x-admin-password': adminPasswordInput.value,
+          'Content-Type': 'application/json'
+        };
+      }
+
+      function showApp() {
+        loginView.style.display = 'none';
+        appView.style.display = 'block';
+      }
+
+      function showLogin() {
+        appView.style.display = 'none';
+        loginView.style.display = 'grid';
+      }
+
+      async function login(event) {
+        event.preventDefault();
+        loginError.style.display = 'none';
+        localStorage.setItem('proxy_admin_username', adminUsernameInput.value || '');
+        localStorage.setItem('proxy_admin_password', adminPasswordInput.value || '');
+        const ok = await loadKeys(false);
+        if (!ok) {
+          loginError.style.display = 'block';
+          return;
+        }
+        showApp();
+      }
+
+      async function loadKeys(showAlert = true) {
+        newKeyBox.style.display = 'none';
+        const res = await fetch('/admin/keys', { headers: headers() });
+        if (!res.ok) {
+          if (showAlert) alert('Unauthorized or failed to load keys');
+          return false;
+        }
+        const data = await res.json();
+        keysBody.innerHTML = '';
+        if (data.keys.length === 0) {
+          keysBody.innerHTML = '<tr><td colspan="4" class="empty">No keys yet. Create one.</td></tr>';
+          return true;
+        }
+        for (const item of data.keys) {
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td><div class="row"><input class="key-output" readonly value="${item.key}" /><button class="copy-row-key">Copy</button></div></td>
+            <td><code>${item.default_model}</code></td>
+            <td>${item.created_at}</td>
+            <td><button class="danger" data-id="${item.id}">Revoke</button></td>
+          `;
+          tr.querySelector('.copy-row-key').addEventListener('click', () => copyText(item.key));
+          tr.querySelector('button[data-id]').addEventListener('click', async () => {
+            if (!confirm('Revoke this key?')) return;
+            const del = await fetch(`/admin/keys/${item.id}`, { method: 'DELETE', headers: headers() });
+            if (!del.ok) {
+              alert('Delete failed');
+              return;
+            }
+            await loadKeys();
+          });
+          keysBody.appendChild(tr);
+        }
+        return true;
+      }
+
+      async function copyText(value) {
+        try {
+          await navigator.clipboard.writeText(value);
+          alert('Copied');
+        } catch {
+          prompt('Copy this key:', value);
+        }
+      }
+
+      async function createKey() {
+        newKeyBox.style.display = 'none';
+        const payload = {
+          default_model: defaultModelInput.value.trim(),
+          allowed_models: allowedModelsInput.value.split(',').map((model) => model.trim()).filter(Boolean),
+          force_model: forceModelInput.value === 'true'
+        };
+        const res = await fetch('/admin/keys', { method: 'POST', headers: headers(), body: JSON.stringify(payload) });
+        if (!res.ok) {
+          alert('Create failed');
+          return;
+        }
+        const data = await res.json();
+        newKeyBox.style.display = 'block';
+        newKeyBox.innerHTML = `
+          <strong>New key</strong>
+          <p class="muted">Copy now and give user this token.</p>
+          <div class="row">
+            <input class="key-output" id="createdKey" readonly value="${data.key}" />
+            <button id="copyCreatedKeyBtn">Copy</button>
+          </div>
+          <p class="muted">Model: <code>${data.default_model}</code></p>
+        `;
+        document.getElementById('createdKey').select();
+        document.getElementById('copyCreatedKeyBtn').addEventListener('click', () => copyText(data.key));
+        createPanel.style.display = 'none';
+        await loadKeys();
+        newKeyBox.style.display = 'block';
+      }
+
+      loginForm.addEventListener('submit', login);
+      document.getElementById('refreshBtn').addEventListener('click', () => loadKeys());
+      document.getElementById('toggleCreateBtn').addEventListener('click', () => {
+        createPanel.style.display = createPanel.style.display === 'block' ? 'none' : 'block';
+      });
+      document.getElementById('cancelCreateBtn').addEventListener('click', () => {
+        createPanel.style.display = 'none';
+      });
+      document.getElementById('logoutBtn').addEventListener('click', () => {
+        localStorage.removeItem('proxy_admin_password');
+        adminPasswordInput.value = '';
+        showLogin();
+      });
+      document.getElementById('createBtn').addEventListener('click', createKey);
+      showLogin();
+    </script>
+  </body>
+</html>
