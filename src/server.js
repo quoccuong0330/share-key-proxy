@@ -1,5 +1,5 @@
 const express = require('express');
-const { findKey, initKeysStore } = require('./keys-store');
+const { findKey, findProvider, initKeysStore } = require('./keys-store');
 const { createAdminRouter, createAdminApiRouter } = require('./admin-routes');
 const { handleAnthropicMessages, handleCountTokens, handleUnsupported, anthropicError } = require('./anthropic-adapter');
 
@@ -13,8 +13,8 @@ const ADMIN_USERNAME = process.env.ADMIN_USERNAME || 'admin';
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123';
 const DATABASE_URL = process.env.DATABASE_URL;
 
-if (!DIGI_BASE_URL || !DIGI_AUTH_TOKEN || !PROXY_API_KEY || !DATABASE_URL) {
-  console.error('Missing required env vars: DIGI_BASE_URL, DIGI_AUTH_TOKEN, PROXY_API_KEY, DATABASE_URL');
+if (!DATABASE_URL) {
+  console.error('Missing required env var: DATABASE_URL');
   process.exit(1);
 }
 
@@ -32,11 +32,23 @@ async function authenticateProxyKey(req, res, next) {
     return anthropicError(res, 401, 'authentication_error', 'Missing proxy token');
   }
 
-  if (clientKey === PROXY_API_KEY) {
+  if (PROXY_API_KEY && clientKey === PROXY_API_KEY) {
+    if (!DIGI_BASE_URL || !DIGI_AUTH_TOKEN) {
+      return anthropicError(res, 503, 'api_error', 'No provider configured for bootstrap proxy token');
+    }
     req.proxyKey = {
+      id: null,
+      owner: 'default',
+      provider_id: null,
       default_model: 'cx/gpt-5.5',
       allowed_models: ['cx/gpt-5.5', 'cx/gpt-5.4', 'cx/gpt-5.3-codex'],
       force_model: false
+    };
+    req.provider = {
+      id: null,
+      name: 'legacy-digi',
+      base_url: DIGI_BASE_URL,
+      auth_token: DIGI_AUTH_TOKEN
     };
     return next();
   }
@@ -47,6 +59,10 @@ async function authenticateProxyKey(req, res, next) {
   }
 
   req.proxyKey = key;
+  req.provider = await findProvider(key.provider_id);
+  if (!req.provider) {
+    return anthropicError(res, 503, 'api_error', 'Provider is not configured for this proxy token');
+  }
   return next();
 }
 
@@ -70,7 +86,7 @@ app.use('/admin', createAdminApiRouter(authenticateAdmin));
 app.use('/public', express.static('public'));
 
 app.post('/v1/messages', authenticateProxyKey, (req, res) => {
-  handleAnthropicMessages(req, res, DIGI_BASE_URL, DIGI_AUTH_TOKEN);
+  handleAnthropicMessages(req, res, req.provider);
 });
 
 app.post('/v1/messages/count_tokens', authenticateProxyKey, handleCountTokens);
@@ -81,7 +97,7 @@ async function start() {
   await initKeysStore();
   app.listen(PORT, () => {
     console.log(`Proxy server running on port ${PORT}`);
-    console.log(`Digi upstream configured: ${new URL(DIGI_BASE_URL).origin}`);
+    console.log('Dynamic providers enabled');
   });
 }
 

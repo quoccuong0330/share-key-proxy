@@ -6,62 +6,133 @@
     <title>Proxy Key Manager</title>
     <style>
       :root {
-        --bg: #0f172a;
-        --panel: #ffffff;
-        --panel-soft: #f8fafc;
-        --text: #0f172a;
-        --muted: #64748b;
-        --border: #e2e8f0;
-        --primary: #2563eb;
-        --primary-dark: #1d4ed8;
-        --danger: #dc2626;
-        --ok: #16a34a;
+        --bg: #070a12;
+        --bg-soft: #0c111d;
+        --panel: rgba(17, 24, 39, .86);
+        --panel-strong: rgba(23, 31, 48, .96);
+        --panel-soft: rgba(31, 41, 55, .72);
+        --text: #eef6ff;
+        --muted: #91a3b8;
+        --border: rgba(148, 163, 184, .18);
+        --primary: #4de3ff;
+        --primary-dark: #20b8d8;
+        --accent: #8b7cff;
+        --danger: #fb7185;
+        --ok: #b7f36b;
       }
 
       * { box-sizing: border-box; }
-      body { margin: 0; font-family: Inter, Arial, sans-serif; background: #f1f5f9; color: var(--text); }
-      button { border: 0; border-radius: 10px; padding: 10px 14px; cursor: pointer; font-weight: 700; background: var(--primary); color: #fff; }
-      button:hover { background: var(--primary-dark); }
-      button.secondary { background: #e2e8f0; color: var(--text); }
-      button.secondary:hover { background: #cbd5e1; }
-      button.danger { background: var(--danger); }
-      input, select { width: 100%; padding: 11px 12px; border: 1px solid var(--border); border-radius: 10px; font: inherit; background: #fff; }
-      label { display: grid; gap: 6px; font-size: 13px; font-weight: 700; color: #334155; }
-      code { background: #eef2ff; color: #3730a3; padding: 3px 7px; border-radius: 7px; }
+      body {
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at 15% 8%, rgba(77, 227, 255, .18), transparent 30%),
+          radial-gradient(circle at 80% 0%, rgba(139, 124, 255, .16), transparent 28%),
+          linear-gradient(135deg, #05070d 0%, #0b1020 52%, #05070d 100%);
+        color: var(--text);
+      }
+      button {
+        border: 1px solid rgba(77, 227, 255, .35);
+        border-radius: 12px;
+        padding: 10px 14px;
+        cursor: pointer;
+        font-weight: 800;
+        background: linear-gradient(135deg, var(--primary), #8b7cff);
+        color: #061019;
+        box-shadow: 0 14px 36px rgba(77, 227, 255, .18);
+      }
+      button:hover { background: linear-gradient(135deg, #7bebff, #a79bff); }
+      button.secondary { background: rgba(148, 163, 184, .1); color: var(--text); box-shadow: none; border-color: var(--border); }
+      button.secondary:hover { background: rgba(148, 163, 184, .18); }
+      button.danger { background: rgba(251, 113, 133, .14); color: #fecdd3; border-color: rgba(251, 113, 133, .32); box-shadow: none; }
+      input, select {
+        width: 100%;
+        padding: 12px 13px;
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        font: inherit;
+        background: rgba(8, 13, 24, .78);
+        color: var(--text);
+        outline: none;
+      }
+      input:focus, select:focus { border-color: rgba(77, 227, 255, .58); box-shadow: 0 0 0 4px rgba(77, 227, 255, .08); }
+      label { display: grid; gap: 7px; font-size: 12px; font-weight: 800; color: #cbd7e6; letter-spacing: .02em; }
+      code { background: rgba(77, 227, 255, .1); color: #8ff0ff; padding: 3px 7px; border-radius: 7px; border: 1px solid rgba(77, 227, 255, .16); }
       table { border-collapse: collapse; width: 100%; }
-      th, td { border-bottom: 1px solid var(--border); padding: 12px; text-align: left; vertical-align: top; }
-      th { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; background: var(--panel-soft); }
-      .login-shell { min-height: 100vh; display: grid; place-items: center; padding: 24px; background: radial-gradient(circle at top left, #1e3a8a, var(--bg) 45%); }
-      .login-card { width: min(440px, 100%); background: var(--panel); border-radius: 22px; padding: 28px; box-shadow: 0 24px 80px rgba(15, 23, 42, .35); }
-      .login-card h1 { margin: 0 0 8px; font-size: 28px; }
-      .login-card p { margin: 0 0 22px; color: var(--muted); line-height: 1.5; }
+      th, td { border-bottom: 1px solid var(--border); padding: 14px 12px; text-align: left; vertical-align: top; }
+      th { color: var(--muted); font-size: 11px; text-transform: uppercase; letter-spacing: .1em; background: rgba(148, 163, 184, .05); }
+      .login-shell { min-height: 100vh; display: grid; place-items: center; padding: 24px; }
+      .login-card {
+        width: min(460px, 100%);
+        background: linear-gradient(180deg, rgba(23, 31, 48, .92), rgba(12, 17, 29, .9));
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        padding: 30px;
+        box-shadow: 0 30px 100px rgba(0, 0, 0, .45), inset 0 1px 0 rgba(255, 255, 255, .06);
+        backdrop-filter: blur(18px);
+      }
+      .login-card h1 { margin: 0 0 8px; font-size: 32px; letter-spacing: -.04em; }
+      .login-card p { margin: 0 0 24px; color: var(--muted); line-height: 1.55; }
+      .brand-mark { display: inline-grid; place-items: center; width: 42px; height: 42px; margin-bottom: 18px; border-radius: 14px; background: linear-gradient(135deg, var(--primary), var(--accent)); color: #061019; font-weight: 950; box-shadow: 0 18px 54px rgba(77, 227, 255, .22); }
       .stack { display: grid; gap: 14px; }
       .app-shell { display: none; min-height: 100vh; }
-      .topbar { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 18px 24px; background: var(--bg); color: #fff; }
-      .topbar h1 { margin: 0; font-size: 20px; }
-      .topbar p { margin: 4px 0 0; color: #cbd5e1; font-size: 13px; }
-      .content { padding: 24px; max-width: 1100px; margin: 0 auto; }
-      .card { background: var(--panel); border: 1px solid var(--border); border-radius: 18px; padding: 18px; box-shadow: 0 1px 2px rgba(15, 23, 42, .04); }
-      .card h2 { margin: 0 0 12px; font-size: 17px; }
-      .muted { color: var(--muted); font-size: 13px; line-height: 1.45; }
-      .new-key { display: none; border: 1px solid #bbf7d0; background: #f0fdf4; border-radius: 14px; padding: 12px; margin: 12px 0; }
+      .topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 16px;
+        padding: 22px 28px;
+        background: rgba(7, 10, 18, .72);
+        border-bottom: 1px solid var(--border);
+        backdrop-filter: blur(18px);
+      }
+      .topbar h1 { margin: 0; font-size: 22px; letter-spacing: -.03em; }
+      .topbar p { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
+      .brand-row { display: flex; align-items: center; gap: 13px; }
+      .topbar .brand-mark { width: 40px; height: 40px; margin: 0; border-radius: 13px; }
+      .content { padding: 28px; max-width: 1180px; margin: 0 auto; }
+      .metrics { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-bottom: 14px; }
+      .metric-card { background: var(--panel); border: 1px solid var(--border); border-radius: 18px; padding: 16px; box-shadow: inset 0 1px 0 rgba(255, 255, 255, .05); }
+      .metric-card span { color: var(--muted); font-size: 12px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+      .metric-card strong { display: block; margin-top: 8px; font-size: 28px; letter-spacing: -.04em; }
+      .card {
+        background: var(--panel);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 20px;
+        box-shadow: 0 24px 80px rgba(0, 0, 0, .28), inset 0 1px 0 rgba(255, 255, 255, .05);
+        backdrop-filter: blur(18px);
+      }
+      .card h2 { margin: 0 0 8px; font-size: 19px; letter-spacing: -.02em; }
+      .muted { color: var(--muted); font-size: 13px; line-height: 1.5; }
+      .new-key { display: none; border: 1px solid rgba(183, 243, 107, .28); background: rgba(183, 243, 107, .08); border-radius: 16px; padding: 14px; margin: 14px 0; }
       .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
-      .toolbar { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
-      .create-panel { display: none; margin-bottom: 16px; }
+      .toolbar { display: flex; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+      .create-panel { display: none; margin-bottom: 16px; padding: 16px; background: rgba(148, 163, 184, .06); border: 1px solid var(--border); border-radius: 18px; }
       .key-output { min-width: min(520px, 100%); font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; }
-      .table-wrap { overflow-x: auto; }
-      .error { display: none; color: var(--danger); background: #fef2f2; border: 1px solid #fecaca; padding: 10px 12px; border-radius: 10px; font-size: 13px; }
-      .empty { padding: 28px; color: var(--muted); text-align: center; }
+      .table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 18px; }
+      .dashboard-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 14px; }
+      .mini-card { background: var(--panel); border: 1px solid var(--border); border-radius: 20px; padding: 18px; }
+      .mini-card h2 { margin: 0 0 12px; font-size: 17px; }
+      .form-grid { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 10px; align-items: end; }
+      .model-list { max-height: 160px; overflow: auto; display: grid; gap: 8px; }
+      .model-chip { display: inline-flex; width: fit-content; padding: 6px 9px; border: 1px solid var(--border); border-radius: 999px; color: #cbd7e6; background: rgba(148, 163, 184, .06); font-size: 12px; }
+      .error { display: none; color: #fecdd3; background: rgba(251, 113, 133, .1); border: 1px solid rgba(251, 113, 133, .28); padding: 10px 12px; border-radius: 12px; font-size: 13px; }
+      .empty { padding: 30px; color: var(--muted); text-align: center; }
       @media (max-width: 900px) {
         .topbar { align-items: flex-start; flex-direction: column; }
+        .metrics { grid-template-columns: 1fr; }
+        .toolbar { flex-direction: column; }
+        .dashboard-grid, .form-grid { grid-template-columns: 1fr; }
       }
     </style>
   </head>
   <body>
     <section id="loginView" class="login-shell">
       <form id="loginForm" class="login-card">
-        <h1>Admin Login</h1>
-        <p>Login để tạo proxy key cho Claude Code. Key tạo xong đưa user dùng làm <code>ANTHROPIC_AUTH_TOKEN</code>.</p>
+        <div class="brand-mark">C</div>
+        <h1>Chiasedi Admin</h1>
+        <p>Night dashboard để tạo proxy key cho user. Copy token vào <code>ANTHROPIC_AUTH_TOKEN</code>.</p>
         <div class="stack">
           <label>Username
             <input id="adminUsername" type="text" autocomplete="username" value="admin" />
@@ -78,9 +149,12 @@
 
     <section id="appView" class="app-shell">
       <header class="topbar">
-        <div>
-          <h1>Proxy Key Manager</h1>
-          <p>Domain proxy → Digi upstream. Admin tạo key, user copy vào Claude Code settings.</p>
+        <div class="brand-row">
+          <div class="brand-mark">C</div>
+          <div>
+            <h1>Chiasedi Dashboard</h1>
+            <p>Share signal. Grow together. Proxy → Digi upstream.</p>
+          </div>
         </div>
         <div class="row">
           <button id="refreshBtn" class="secondary">Refresh</button>
@@ -89,6 +163,11 @@
       </header>
 
       <main class="content">
+        <section class="metrics" aria-label="Dashboard summary">
+          <div class="metric-card"><span>Active keys</span><strong id="activeKeysCount">0</strong></div>
+          <div class="metric-card"><span>Default model</span><strong>5.5</strong></div>
+          <div class="metric-card"><span>Policy</span><strong>Live</strong></div>
+        </section>
         <section class="card">
           <div class="toolbar">
             <div>
@@ -100,6 +179,12 @@
 
           <div id="createPanel" class="create-panel">
             <div class="stack">
+              <label>Provider
+                <select id="keyProvider"></select>
+              </label>
+              <label>Owner
+                <input id="owner" type="text" placeholder="user name / team / note" />
+              </label>
               <label>Default model
                 <input id="defaultModel" type="text" value="cx/gpt-5.5" />
               </label>
@@ -126,12 +211,82 @@
               <thead>
                 <tr>
                   <th>Key</th>
-                  <th>Model</th>
-                  <th>Created</th>
+                  <th>Owner</th>
                   <th>Action</th>
                 </tr>
               </thead>
               <tbody id="keysBody"></tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="dashboard-grid">
+          <div class="mini-card">
+            <h2>Providers</h2>
+            <p class="muted">Nhập domain + API key provider OpenAI-compatible, validate bằng <code>/models</code>.</p>
+            <div class="stack">
+              <label>Name
+                <input id="providerName" type="text" placeholder="Digi VIP" />
+              </label>
+              <label>Base URL
+                <input id="providerBaseUrl" type="url" placeholder="https://vip.digishop.work/v1" />
+              </label>
+              <label>API key
+                <input id="providerToken" type="password" placeholder="sk-..." />
+              </label>
+              <div class="row">
+                <button id="validateProviderBtn" class="secondary" type="button">Validate</button>
+                <button id="saveProviderBtn" type="button">Save provider</button>
+              </div>
+              <label>Selected provider
+                <select id="providerSelect"></select>
+              </label>
+              <div id="providersList" class="model-list"></div>
+            </div>
+          </div>
+
+          <div class="mini-card">
+            <h2>Model pricing</h2>
+            <p class="muted">Nhập giá per 1M token. Cost = input × prompt + output × completion.</p>
+            <div class="form-grid">
+              <label>Provider
+                <select id="priceProvider"></select>
+              </label>
+              <label>Model
+                <input id="priceModel" type="text" placeholder="cx/gpt-5.5" />
+              </label>
+              <label>Input / 1M
+                <input id="inputPrice" type="number" min="0" step="0.000001" value="0" />
+              </label>
+              <label>Output / 1M
+                <input id="outputPrice" type="number" min="0" step="0.000001" value="0" />
+              </label>
+              <button id="savePriceBtn" type="button">Save</button>
+            </div>
+            <div class="table-wrap" style="margin-top: 14px;">
+              <table>
+                <thead><tr><th>Model</th><th>Input</th><th>Output</th><th>Action</th></tr></thead>
+                <tbody id="pricesBody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <div class="mini-card">
+            <h2>Provider models</h2>
+            <p class="muted">Lấy từ provider đã chọn qua <code>/models</code>.</p>
+            <div class="row" style="margin-bottom: 12px;">
+              <button id="loadModelsBtn" class="secondary" type="button">Load models</button>
+            </div>
+            <div id="modelsList" class="model-list"></div>
+          </div>
+        </section>
+
+        <section class="mini-card" style="margin-top: 14px;">
+          <h2>Usage credit</h2>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Owner</th><th>Provider</th><th>Model</th><th>Req</th><th>Prompt</th><th>Completion</th><th>Total</th><th>Cost</th></tr></thead>
+              <tbody id="usageBody"></tbody>
             </table>
           </div>
         </section>
@@ -147,10 +302,26 @@
       const adminPasswordInput = document.getElementById('adminPassword');
       const keysBody = document.getElementById('keysBody');
       const newKeyBox = document.getElementById('newKeyBox');
+      const providerNameInput = document.getElementById('providerName');
+      const providerBaseUrlInput = document.getElementById('providerBaseUrl');
+      const providerTokenInput = document.getElementById('providerToken');
+      const providerSelect = document.getElementById('providerSelect');
+      const keyProviderInput = document.getElementById('keyProvider');
+      const priceProviderInput = document.getElementById('priceProvider');
+      const providersList = document.getElementById('providersList');
+      const ownerInput = document.getElementById('owner');
       const defaultModelInput = document.getElementById('defaultModel');
       const allowedModelsInput = document.getElementById('allowedModels');
       const forceModelInput = document.getElementById('forceModel');
       const createPanel = document.getElementById('createPanel');
+      const activeKeysCount = document.getElementById('activeKeysCount');
+      const priceModelInput = document.getElementById('priceModel');
+      const inputPriceInput = document.getElementById('inputPrice');
+      const outputPriceInput = document.getElementById('outputPrice');
+      const pricesBody = document.getElementById('pricesBody');
+      const usageBody = document.getElementById('usageBody');
+      const modelsList = document.getElementById('modelsList');
+      let providers = [];
 
       adminUsernameInput.value = localStorage.getItem('proxy_admin_username') || 'admin';
       adminPasswordInput.value = localStorage.getItem('proxy_admin_password') || 'admin123';
@@ -173,6 +344,122 @@
         loginView.style.display = 'grid';
       }
 
+      function selectedProviderId() {
+        return providerSelect.value || keyProviderInput.value || priceProviderInput.value;
+      }
+
+      function createCell(text) {
+        const td = document.createElement('td');
+        td.textContent = text;
+        return td;
+      }
+
+      function createCodeCell(text) {
+        const td = document.createElement('td');
+        const code = document.createElement('code');
+        code.textContent = text;
+        td.appendChild(code);
+        return td;
+      }
+
+      function createEmptyRow(colspan, text) {
+        const tr = document.createElement('tr');
+        const td = document.createElement('td');
+        td.colSpan = colspan;
+        td.className = 'empty';
+        td.textContent = text;
+        tr.appendChild(td);
+        return tr;
+      }
+
+      function envPayload(key, model) {
+        return JSON.stringify({
+          env: {
+            ANTHROPIC_AUTH_TOKEN: key,
+            ANTHROPIC_BASE_URL: window.location.origin,
+            ANTHROPIC_DEFAULT_HAIKU_MODEL: model,
+            ANTHROPIC_DEFAULT_OPUS_MODEL: model,
+            ANTHROPIC_DEFAULT_SONNET_MODEL: model,
+            ANTHROPIC_MODEL: model,
+            CCS_DROID_PROVIDER: 'openai'
+          }
+        }, null, 2);
+      }
+
+      function syncProviderSelects() {
+        const selects = [providerSelect, keyProviderInput, priceProviderInput];
+        const current = selectedProviderId();
+        for (const select of selects) {
+          select.innerHTML = '';
+          for (const provider of providers) {
+            const option = document.createElement('option');
+            option.value = provider.id;
+            option.textContent = provider.name || provider.base_url;
+            select.appendChild(option);
+          }
+          select.value = current || providers[0]?.id || '';
+        }
+      }
+
+      async function loadProviders() {
+        const res = await fetch('/admin/providers', { headers: headers() });
+        if (!res.ok) return false;
+        const data = await res.json();
+        providers = data.providers || [];
+        syncProviderSelects();
+        providersList.innerHTML = '';
+        if (providers.length === 0) {
+          const empty = document.createElement('span');
+          empty.className = 'model-chip';
+          empty.textContent = 'No providers yet';
+          providersList.appendChild(empty);
+          return true;
+        }
+        for (const provider of providers) {
+          const chip = document.createElement('button');
+          chip.className = 'model-chip';
+          chip.type = 'button';
+          chip.textContent = `${provider.name || 'Provider'} · ${provider.base_url}`;
+          chip.addEventListener('click', () => {
+            providerSelect.value = provider.id;
+            keyProviderInput.value = provider.id;
+            priceProviderInput.value = provider.id;
+            loadPrices();
+          });
+          providersList.appendChild(chip);
+        }
+        return true;
+      }
+
+      async function validateProvider() {
+        const res = await fetch('/admin/providers/validate', {
+          method: 'POST',
+          headers: headers(),
+          body: JSON.stringify({ base_url: providerBaseUrlInput.value.trim(), auth_token: providerTokenInput.value.trim() })
+        });
+        if (!res.ok) {
+          alert('Provider invalid');
+          return;
+        }
+        const data = await res.json();
+        alert(`Valid provider. Models: ${(data.models || []).length}`);
+      }
+
+      async function saveProvider() {
+        const res = await fetch('/admin/providers', {
+          method: 'POST',
+          headers: headers(),
+          body: JSON.stringify({ name: providerNameInput.value.trim(), base_url: providerBaseUrlInput.value.trim(), auth_token: providerTokenInput.value.trim() })
+        });
+        if (!res.ok) {
+          alert('Save provider failed');
+          return;
+        }
+        providerTokenInput.value = '';
+        await loadProviders();
+        await loadPrices();
+      }
+
       async function login(event) {
         event.preventDefault();
         loginError.style.display = 'none';
@@ -184,6 +471,9 @@
           return;
         }
         showApp();
+        await loadProviders();
+        await loadPrices();
+        await loadUsage();
       }
 
       async function loadKeys(showAlert = true) {
@@ -194,21 +484,35 @@
           return false;
         }
         const data = await res.json();
+        activeKeysCount.textContent = data.keys.length;
         keysBody.innerHTML = '';
         if (data.keys.length === 0) {
-          keysBody.innerHTML = '<tr><td colspan="4" class="empty">No keys yet. Create one.</td></tr>';
+          keysBody.appendChild(createEmptyRow(3, 'No keys yet. Create one.'));
           return true;
         }
         for (const item of data.keys) {
           const tr = document.createElement('tr');
-          tr.innerHTML = `
-            <td><div class="row"><input class="key-output" readonly value="${item.key}" /><button class="copy-row-key">Copy</button></div></td>
-            <td><code>${item.default_model}</code></td>
-            <td>${item.created_at}</td>
-            <td><button class="danger" data-id="${item.id}">Revoke</button></td>
-          `;
-          tr.querySelector('.copy-row-key').addEventListener('click', () => copyText(item.key));
-          tr.querySelector('button[data-id]').addEventListener('click', async () => {
+          const keyCell = document.createElement('td');
+          const keyInput = document.createElement('input');
+          keyInput.className = 'key-output';
+          keyInput.readOnly = true;
+          keyInput.value = item.preview || item.key;
+          keyCell.appendChild(keyInput);
+          tr.appendChild(keyCell);
+          tr.appendChild(createCell(item.owner || '-'));
+
+          const actionCell = document.createElement('td');
+          const actionRow = document.createElement('div');
+          actionRow.className = 'row';
+          const copyButton = document.createElement('button');
+          copyButton.type = 'button';
+          copyButton.textContent = 'Copy env';
+          copyButton.addEventListener('click', () => copyText(envPayload(item.key, item.default_model)));
+          const revokeButton = document.createElement('button');
+          revokeButton.type = 'button';
+          revokeButton.className = 'danger';
+          revokeButton.textContent = 'Revoke';
+          revokeButton.addEventListener('click', async () => {
             if (!confirm('Revoke this key?')) return;
             const del = await fetch(`/admin/keys/${item.id}`, { method: 'DELETE', headers: headers() });
             if (!del.ok) {
@@ -217,6 +521,9 @@
             }
             await loadKeys();
           });
+          actionRow.append(copyButton, revokeButton);
+          actionCell.appendChild(actionRow);
+          tr.appendChild(actionCell);
           keysBody.appendChild(tr);
         }
         return true;
@@ -234,6 +541,8 @@
       async function createKey() {
         newKeyBox.style.display = 'none';
         const payload = {
+          owner: ownerInput.value.trim(),
+          provider_id: keyProviderInput.value,
           default_model: defaultModelInput.value.trim(),
           allowed_models: allowedModelsInput.value.split(',').map((model) => model.trim()).filter(Boolean),
           force_model: forceModelInput.value === 'true'
@@ -245,20 +554,141 @@
         }
         const data = await res.json();
         newKeyBox.style.display = 'block';
-        newKeyBox.innerHTML = `
-          <strong>New key</strong>
-          <p class="muted">Copy now and give user this token.</p>
-          <div class="row">
-            <input class="key-output" id="createdKey" readonly value="${data.key}" />
-            <button id="copyCreatedKeyBtn">Copy</button>
-          </div>
-          <p class="muted">Model: <code>${data.default_model}</code></p>
-        `;
-        document.getElementById('createdKey').select();
-        document.getElementById('copyCreatedKeyBtn').addEventListener('click', () => copyText(data.key));
+        newKeyBox.textContent = '';
+        const title = document.createElement('strong');
+        title.textContent = 'New key';
+        const help = document.createElement('p');
+        help.className = 'muted';
+        help.textContent = 'Copy env JSON and give user this config.';
+        const row = document.createElement('div');
+        row.className = 'row';
+        const createdKey = document.createElement('input');
+        createdKey.className = 'key-output';
+        createdKey.id = 'createdKey';
+        createdKey.readOnly = true;
+        createdKey.value = data.key;
+        const copyButton = document.createElement('button');
+        copyButton.id = 'copyCreatedKeyBtn';
+        copyButton.type = 'button';
+        copyButton.textContent = 'Copy env';
+        copyButton.addEventListener('click', () => copyText(envPayload(data.key, data.default_model)));
+        row.append(createdKey, copyButton);
+        const ownerLine = document.createElement('p');
+        ownerLine.className = 'muted';
+        ownerLine.textContent = `Owner: ${data.owner || '-'}`;
+        newKeyBox.append(title, help, row, ownerLine);
+        createdKey.select();
         createPanel.style.display = 'none';
         await loadKeys();
         newKeyBox.style.display = 'block';
+      }
+
+      async function loadProviderModels(providerId) {
+        if (!providerId) return [];
+        const res = await fetch(`/admin/providers/${providerId}/models`, { headers: headers() });
+        if (!res.ok) return [];
+        const data = await res.json();
+        return data.data || [];
+      }
+
+      async function loadPrices() {
+        const providerId = priceProviderInput.value;
+        const [pricesRes, models] = await Promise.all([
+          fetch(`/admin/prices?provider_id=${encodeURIComponent(providerId)}`, { headers: headers() }),
+          loadProviderModels(providerId)
+        ]);
+        if (!pricesRes.ok) return;
+        const data = await pricesRes.json();
+        const pricesByModel = new Map((data.prices || []).map((item) => [item.model, item]));
+        const rows = models.length ? models.map((item) => pricesByModel.get(item.id) || { model: item.id, input_per_1m: 0, output_per_1m: 0 }) : data.prices;
+        pricesBody.innerHTML = '';
+        if (!rows.length) {
+          pricesBody.appendChild(createEmptyRow(4, 'No provider models yet.'));
+          return;
+        }
+        for (const item of rows) {
+          const tr = document.createElement('tr');
+          const actionCell = document.createElement('td');
+          const editButton = document.createElement('button');
+          editButton.type = 'button';
+          editButton.className = 'secondary';
+          editButton.textContent = pricesByModel.has(item.model) ? 'Edit' : 'Add price';
+          editButton.addEventListener('click', () => {
+            priceModelInput.value = item.model;
+            inputPriceInput.value = item.input_per_1m || 0;
+            outputPriceInput.value = item.output_per_1m || 0;
+          });
+          actionCell.appendChild(editButton);
+          tr.append(createCodeCell(item.model), createCell(item.input_per_1m || 0), createCell(item.output_per_1m || 0), actionCell);
+          pricesBody.appendChild(tr);
+        }
+      }
+
+      async function savePrice() {
+        const payload = {
+          provider_id: priceProviderInput.value,
+          model: priceModelInput.value.trim(),
+          input_per_1m: Number(inputPriceInput.value || 0),
+          output_per_1m: Number(outputPriceInput.value || 0)
+        };
+        const res = await fetch('/admin/prices', { method: 'POST', headers: headers(), body: JSON.stringify(payload) });
+        if (!res.ok) {
+          alert('Save price failed');
+          return;
+        }
+        await loadPrices();
+        await loadUsage();
+      }
+
+      async function loadUsage() {
+        const res = await fetch('/admin/usage', { headers: headers() });
+        if (!res.ok) return;
+        const data = await res.json();
+        usageBody.innerHTML = '';
+        if (!data.usage.length) {
+          usageBody.appendChild(createEmptyRow(8, 'No usage yet.'));
+          return;
+        }
+        for (const item of data.usage) {
+          const tr = document.createElement('tr');
+          tr.append(
+            createCell(item.owner),
+            createCell(item.provider_name),
+            createCodeCell(item.model),
+            createCell(item.requests),
+            createCell(item.prompt_tokens),
+            createCell(item.completion_tokens),
+            createCell(item.total_tokens),
+            createCell(item.cost.toFixed(6))
+          );
+          usageBody.appendChild(tr);
+        }
+      }
+
+      async function loadModels() {
+        const providerId = selectedProviderId();
+        if (!providerId) {
+          alert('Select provider first');
+          return;
+        }
+        const models = await loadProviderModels(providerId);
+        if (!models.length) {
+          alert('Load models failed or empty');
+          return;
+        }
+        modelsList.innerHTML = '';
+        for (const item of models) {
+          const chip = document.createElement('button');
+          chip.className = 'model-chip';
+          chip.type = 'button';
+          chip.textContent = item.id;
+          chip.addEventListener('click', () => {
+            priceModelInput.value = item.id;
+            defaultModelInput.value = item.id;
+            allowedModelsInput.value = item.id;
+          });
+          modelsList.appendChild(chip);
+        }
       }
 
       loginForm.addEventListener('submit', login);
@@ -275,6 +705,16 @@
         showLogin();
       });
       document.getElementById('createBtn').addEventListener('click', createKey);
+      document.getElementById('savePriceBtn').addEventListener('click', savePrice);
+      document.getElementById('loadModelsBtn').addEventListener('click', loadModels);
+      document.getElementById('saveProviderBtn').addEventListener('click', saveProvider);
+      document.getElementById('validateProviderBtn').addEventListener('click', validateProvider);
+      providerSelect.addEventListener('change', () => {
+        keyProviderInput.value = providerSelect.value;
+        priceProviderInput.value = providerSelect.value;
+        loadPrices();
+      });
+      priceProviderInput.addEventListener('change', loadPrices);
       showLogin();
     </script>
   </body>

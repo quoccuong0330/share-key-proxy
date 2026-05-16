@@ -1,0 +1,201 @@
+{
+  "version": "1.0",
+  "work_item_id": "260512-2309-api-proxy-implementation",
+  "status": "ready_for_plan",
+  "problem_statement": "auto-bootstrap-plan",
+  "goals": [],
+  "scope_in": [],
+  "scope_out": [],
+  "constraints": [],
+  "chosen_direction": "Auto bootstrap prepared decision handoff before /plan.",
+  "architecture_decisions": [
+    "Favor additive changes and reuse existing workflow artifacts.",
+    "Keep plan-status as the only progress source of truth.",
+    "Favor additive changes and reuse existing workflow artifacts.",
+    "Keep plan-status as the only progress source of truth."
+  ],
+  "ui_decisions": [],
+  "information_architecture": [],
+  "sitemap": [
+    "Account Overview: Summarize plan, spend, seat, and renewal state.",
+    "Plan & Billing: Upgrade, downgrade, or preview plan impact.",
+    "Payment Methods: Add or replace payment instruments safely.",
+    "Invoices: Find invoices, receipts, and tax details quickly.",
+    "Members & Roles: Show who can spend, approve, or cancel."
+  ],
+  "screen_inventory": [
+    "Account Overview: Summarize plan, spend, seat, and renewal state.",
+    "Plan & Billing: Upgrade, downgrade, or preview plan impact.",
+    "Payment Methods: Add or replace payment instruments safely.",
+    "Invoices: Find invoices, receipts, and tax details quickly.",
+    "Members & Roles: Show who can spend, approve, or cancel."
+  ],
+  "primary_user_flows": [
+    "Change plan",
+    "Update payment method",
+    "Cancel or pause"
+  ],
+  "interaction_contract": [
+    "State model: empty, loading, error, success, disabled",
+    "State model: empty, loading, error, success, disabled"
+  ],
+  "concept_options": [],
+  "decision_checkpoints": [
+    "Confirm the primary user and the riskiest task path.",
+    "Confirm navigation depth before detailing visuals.",
+    "Choose one concept direction to carry into final UI spec: Membership Control, Creator Ledger, System Utility.",
+    "Lock button, modal, and notification behavior before visual polish.",
+    "Validate which money and permission states must remain visible at all times.",
+    "Implementation plan covers scope_in and constraints",
+    "UI plans define sitemap, screen inventory, primary flows, and interaction contract before styling",
+    "Tests and quality gates are defined before /cook",
+    "Plan includes Dependencies and Test Strategy sections"
+  ],
+  "design_system": "",
+  "responsive_strategy": "",
+  "accessibility_constraints": [],
+  "state_matrix": [
+    "empty",
+    "loading",
+    "error",
+    "success",
+    "disabled"
+  ],
+  "product_domain": "general",
+  "primary_user_archetypes": [],
+  "primary_jobs": [
+    "change plan with confidence",
+    "update payment details safely",
+    "understand invoices, renewals, and cancellation impact"
+  ],
+  "information_architecture_details": {
+    "navigation_model": "",
+    "entry_points": [],
+    "primary_zones": [],
+    "notes": []
+  },
+  "interaction_contract_details": {
+    "buttons": [],
+    "modals": [],
+    "notifications": [],
+    "state_model": [
+      "empty",
+      "loading",
+      "error",
+      "success",
+      "disabled"
+    ],
+    "contract_notes": [
+      "State model: empty, loading, error, success, disabled"
+    ]
+  },
+  "selected_concept": {
+    "name": "Auto bootstrap prepared decision handoff before /plan.",
+    "description": "",
+    "rationale": "Billing confidence matters as much as brand tone."
+  },
+  "rejected_concepts": [
+    {
+      "name": "Creator Ledger",
+      "reason": "Alternative direction not selected while `Membership Control` leads."
+    },
+    {
+      "name": "System Utility",
+      "reason": "Alternative direction not selected while `Membership Control` leads."
+    }
+  ],
+  "concept_rationale": "Billing confidence matters as much as brand tone.",
+  "ui_readiness": {
+    "scope_detected": true,
+    "level": "partial",
+    "enforcement_mode": "warning-only",
+    "required_fields": [
+      "information_architecture",
+      "sitemap",
+      "screen_inventory",
+      "primary_user_flows",
+      "interaction_contract",
+      "concept_options"
+    ],
+    "ready_fields": [
+      "sitemap",
+      "screen_inventory",
+      "primary_user_flows",
+      "interaction_contract",
+      "concept_options"
+    ],
+    "missing_fields": [
+      "information_architecture"
+    ],
+    "warnings": [
+      "UI scope detected but decision-handoff missing information architecture; continue with explicit assumptions and backfill it during /plan."
+    ],
+    "warning_count": 1
+  },
+  "ui_readiness_warnings": [
+    "UI scope detected but decision-handoff missing information architecture; continue with explicit assumptions and backfill it during /plan."
+  ],
+  "dependencies": [
+    "Decision handoff must be current before /plan.",
+    "Readiness must pass before /cook.",
+    "Decision handoff must be current before /plan.",
+    "Readiness must pass before /cook."
+  ],
+  "test_strategy": "Document unit/integration/regression coverage and any UI validation before implementation.",
+  "tradeoffs": [
+    "Prefer refreshed handoff data over stale brainstorming artifacts.",
+    "Prefer refreshed handoff data over stale brainstorming artifacts."
+  ],
+  "acceptance_criteria": [
+    "Implementation plan covers scope_in and constraints",
+    "UI plans define sitemap, screen inventory, primary flows, and interaction contract before styling",
+    "Tests and quality gates are defined before /cook",
+    "Plan includes Dependencies and Test Strategy sections"
+  ],
+  "risks": [],
+  "open_questions": [
+    "Confirm explicit problem statement and expected business outcome.",
+    "Confirm in-scope vs out-of-scope boundaries for first delivery.",
+    "Confirm constraints: timeline, compliance, risk tolerance, and budget.",
+    "Refine success metric and expected user impact before /plan.",
+    "Validate mitigation owner and rollback path for the top risk.",
+    "Confirm module boundaries and ownership map for the first delivery slice."
+  ],
+  "sources": [
+    "docs/project-context.md",
+    "plans/260512-2309-api-proxy-implementation/brainstorm/brainstorm-v01.md",
+    "plans/260512-2309-api-proxy-implementation/brainstorm/brainstorm-v02.md",
+    "plans/260512-2309-api-proxy-implementation/plan.md",
+    "plans/project-scan-report.json"
+  ],
+  "approved_by": "",
+  "approved_at": "",
+  "updated_at": "2026-05-14T08:39:19+00:00",
+  "created_at": "2026-05-12T16:52:21+00:00",
+  "brainstorm_recommendation": {
+    "recommended_depth": "deep",
+    "recommended_session_pattern": "multi-loop (>=3 options + tradeoffs + risk convergence)",
+    "score": 5,
+    "confidence": 0.84,
+    "factors": [
+      "[+2] purpose_confidence=0.66 (medium)",
+      "[+1] one high/critical finding detected",
+      "[+1] repository_index_entries=25",
+      "[+1] architecture boundaries are still mixed/uncertain"
+    ],
+    "required_clarifications": [
+      "Refine success metric and expected user impact before /plan.",
+      "Validate mitigation owner and rollback path for the top risk.",
+      "Confirm module boundaries and ownership map for the first delivery slice."
+    ],
+    "requires_user_confirmation": true,
+    "decision_status": "pending_user_confirmation",
+    "policy": "advisory-only",
+    "generated_at": "2026-05-14T08:35:35+00:00"
+  },
+  "requirement_confirmation_required": true,
+  "requirement_confirmation_status": "pending",
+  "inference_policy": "advisory-only",
+  "inferred_problem_statement": "Likely a backend/API service supporting internal or external clients.",
+  "inferred_chosen_direction": "Architecture appears mixed or monolithic; deeper scan may be required for precise boundaries."
+}

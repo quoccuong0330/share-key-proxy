@@ -1,0 +1,406 @@
+{
+  "project_name": "260512-2309-api-proxy-implementation",
+  "category": "Subscription Box Service",
+  "system": {
+    "mode": "enterprise-workbench",
+    "platform": "cross-platform",
+    "density": "dense",
+    "motion": "low",
+    "tone": "authoritative and calm",
+    "principles": [
+      "Optimize for scanability, hierarchy, and operator confidence.",
+      "Use dense layouts only when every control earns its place.",
+      "Favor stable patterns over novelty in high-frequency workflows."
+    ],
+    "component_focus": [
+      "filters",
+      "data tables",
+      "side panels",
+      "status chips"
+    ]
+  },
+  "pattern": {
+    "name": "Operational Workbench",
+    "sections": "Global filters > KPI strip > primary table or board > inspector pane > audit activity",
+    "cta_placement": "Toolbar actions and contextual row actions",
+    "color_strategy": "Muted neutrals, status accents, high-contrast text",
+    "conversion": "Optimize for task throughput, confidence, and error prevention."
+  },
+  "style": {
+    "name": "Operational Clarity",
+    "type": "Family",
+    "effects": "Table sort, sticky headers, filter chips, progressive disclosure",
+    "keywords": "dense but stable grids, disciplined spacing, clear grouping, restrained emphasis, status-forward UI",
+    "best_for": "B2B workbenches, admin products, operational dashboards, analyst surfaces, workflow-heavy products",
+    "performance": "Excellent",
+    "accessibility": "WCAG AA or better with explicit status semantics"
+  },
+  "colors": {
+    "primary": "#0F62FE",
+    "secondary": "#525252",
+    "cta": "#0F62FE",
+    "background": "#F4F4F4",
+    "text": "#161616",
+    "notes": "Neutral productivity surfaces, restrained accent usage, status colors reserved for real system state."
+  },
+  "typography": {
+    "heading": "IBM Plex Sans",
+    "body": "IBM Plex Sans",
+    "mood": "precise, operational, high-trust, enterprise",
+    "best_for": "B2B dashboards, admin panels, operations consoles, data-heavy workflows",
+    "google_fonts_url": "https://fonts.google.com/specimen/IBM+Plex+Sans",
+    "css_import": "@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');"
+  },
+  "key_effects": "Table sort, sticky headers, filter chips, progressive disclosure",
+  "anti_patterns": "Confusing pricing + No unboxing preview",
+  "decision_rules": {
+    "must_have": "subscription-management"
+  },
+  "severity": "HIGH",
+  "domain_pack": "settings-billing",
+  "domain_pack_warnings": [],
+  "product_frame": {
+    "domain": "general",
+    "summary": "auto-bootstrap-plan",
+    "primary_users": [
+      "account owners managing spend",
+      "team members updating preferences"
+    ],
+    "primary_jobs": [
+      "change plan with confidence",
+      "update payment details safely",
+      "understand invoices, renewals, and cancellation impact"
+    ],
+    "constraints": [
+      "destructive actions need clear preview",
+      "money and permission state must stay explicit"
+    ]
+  },
+  "information_architecture": {
+    "navigation_model": "account hub with overview, billing detail, and permissions grouped around financial state",
+    "entry_points": [
+      "account overview",
+      "renewal banner",
+      "invoice or failed payment notification"
+    ],
+    "primary_zones": [
+      {
+        "name": "plan summary",
+        "purpose": "shows spend, renewal, and seat status at a glance"
+      },
+      {
+        "name": "billing detail",
+        "purpose": "handles payment methods, invoices, and tax details"
+      },
+      {
+        "name": "permissions rail",
+        "purpose": "clarifies who can spend, approve, or cancel"
+      }
+    ]
+  },
+  "sitemap": [
+    {
+      "name": "Account Overview",
+      "purpose": "Summarize plan, spend, seat, and renewal state.",
+      "contains": [
+        "plan card",
+        "usage summary",
+        "renewal notices"
+      ]
+    },
+    {
+      "name": "Plan & Billing",
+      "purpose": "Upgrade, downgrade, or preview plan impact.",
+      "contains": [
+        "plan comparison",
+        "cost breakdown",
+        "change preview"
+      ]
+    },
+    {
+      "name": "Payment Methods",
+      "purpose": "Add or replace payment instruments safely.",
+      "contains": [
+        "payment list",
+        "default badge",
+        "verification state"
+      ]
+    },
+    {
+      "name": "Invoices",
+      "purpose": "Find invoices, receipts, and tax details quickly.",
+      "contains": [
+        "invoice table",
+        "download actions",
+        "billing address"
+      ]
+    },
+    {
+      "name": "Members & Roles",
+      "purpose": "Show who can spend, approve, or cancel.",
+      "contains": [
+        "member list",
+        "role matrix",
+        "invite action"
+      ]
+    }
+  ],
+  "screen_inventory": [
+    {
+      "name": "Account Overview",
+      "goal": "Summarize plan, spend, seat, and renewal state.",
+      "blocks": [
+        "plan card",
+        "usage summary",
+        "renewal notices"
+      ]
+    },
+    {
+      "name": "Plan & Billing",
+      "goal": "Upgrade, downgrade, or preview plan impact.",
+      "blocks": [
+        "plan comparison",
+        "cost breakdown",
+        "change preview"
+      ]
+    },
+    {
+      "name": "Payment Methods",
+      "goal": "Add or replace payment instruments safely.",
+      "blocks": [
+        "payment list",
+        "default badge",
+        "verification state"
+      ]
+    },
+    {
+      "name": "Invoices",
+      "goal": "Find invoices, receipts, and tax details quickly.",
+      "blocks": [
+        "invoice table",
+        "download actions",
+        "billing address"
+      ]
+    },
+    {
+      "name": "Members & Roles",
+      "goal": "Show who can spend, approve, or cancel.",
+      "blocks": [
+        "member list",
+        "role matrix",
+        "invite action"
+      ]
+    }
+  ],
+  "primary_user_flows": [
+    {
+      "name": "Change plan",
+      "steps": [
+        "review current usage",
+        "compare target plan",
+        "preview price and seat impact",
+        "confirm change"
+      ],
+      "system_feedback": "Show immediate billing impact and renewal date.",
+      "failure_recovery": "Offer an undo window or clearly explain when the change takes effect."
+    },
+    {
+      "name": "Update payment method",
+      "steps": [
+        "open payment methods",
+        "add or replace card",
+        "verify details",
+        "set default"
+      ],
+      "system_feedback": "Confirm success inline and by toast or banner.",
+      "failure_recovery": "Preserve the existing default until the new method validates."
+    },
+    {
+      "name": "Cancel or pause",
+      "steps": [
+        "start cancellation",
+        "review retained access and data policy",
+        "confirm with explicit acknowledgement"
+      ],
+      "system_feedback": "Use a modal with consequences and post-action confirmation.",
+      "failure_recovery": "Offer pause or downgrade alternatives before destructive exit."
+    }
+  ],
+  "interaction_contract": {
+    "buttons": [
+      "Primary buttons advance the main task and stay closest to the active object.",
+      "Plan and payment buttons must surface money impact before commit.",
+      "Secondary buttons preserve context and avoid competing with the main action.",
+      "Destructive buttons require high-contrast labeling and consequence text."
+    ],
+    "modals": [
+      "Use modals for destructive confirmation, irreversible billing changes, or short approval steps.",
+      "Use sheets or drawers for supplemental detail that should not wipe current context."
+    ],
+    "notifications": [
+      "Inline validation appears before toasts for form or input problems.",
+      "Success toasts confirm completion and never carry the only next step.",
+      "Persistent banners are reserved for failed payments, renewal risk, compliance, or account degradation."
+    ],
+    "state_model": [
+      "empty",
+      "loading",
+      "error",
+      "success",
+      "disabled"
+    ],
+    "contract_notes": [
+      "State model: empty, loading, error, success, disabled"
+    ]
+  },
+  "concept_options": [
+    {
+      "name": "Membership Control",
+      "description": "Account overview plus plan, payment, and permission clarity.",
+      "best_when": "Billing confidence matters as much as brand tone.",
+      "watchouts": "Can feel dry without clear value framing."
+    },
+    {
+      "name": "Creator Ledger",
+      "description": "Warmer billing center tuned for solo creators and small teams.",
+      "best_when": "The product sells to creators or indie businesses.",
+      "watchouts": "Needs restraint to avoid undermining money trust."
+    },
+    {
+      "name": "System Utility",
+      "description": "Native or restrained preference center with explicit status messaging.",
+      "best_when": "Platform familiarity reduces support burden.",
+      "watchouts": "May under-signal premium positioning."
+    }
+  ],
+  "selected_concept": {
+    "name": "Auto bootstrap prepared decision handoff before /plan.",
+    "description": "",
+    "rationale": ""
+  },
+  "rejected_concepts": [
+    {
+      "name": "Creator Ledger",
+      "reason": "Alternative direction not selected while `Membership Control` leads."
+    },
+    {
+      "name": "System Utility",
+      "reason": "Alternative direction not selected while `Membership Control` leads."
+    }
+  ],
+  "concept_rationale": "Billing confidence matters as much as brand tone.",
+  "trust_signals": [
+    "Preview billing impact before plan changes are confirmed.",
+    "Keep renewal, failed payment, and permission state visible near the primary action.",
+    "Use durable confirmation for cancellations and payment method changes."
+  ],
+  "decision_checkpoints": [
+    "Confirm the primary user and the riskiest task path.",
+    "Confirm navigation depth before detailing visuals.",
+    "Choose one concept direction to carry into final UI spec: Membership Control, Creator Ledger, System Utility.",
+    "Lock button, modal, and notification behavior before visual polish.",
+    "Validate which money and permission states must remain visible at all times.",
+    "Implementation plan covers scope_in and constraints",
+    "UI plans define sitemap, screen inventory, primary flows, and interaction contract before styling",
+    "Tests and quality gates are defined before /cook",
+    "Plan includes Dependencies and Test Strategy sections"
+  ],
+  "phase_hydration_hints": {
+    "requirements": [
+      "Money impact, renewal timing, and permission ownership must be explicit in every critical path.",
+      "Cancellation and downgrade paths must include consequences and alternatives."
+    ],
+    "architecture": [
+      "Reserve space for durable account status and failed payment messaging.",
+      "Model billing change previews and role gating before visual refinement."
+    ],
+    "implementation": [
+      "Implement plan preview, payment verification, and cancellation confirmation as separate behaviors.",
+      "Make failed payment and renewal banners persist across overview and billing detail surfaces."
+    ],
+    "success_checks": [
+      "Users understand plan impact before confirming changes.",
+      "Payment method replacement does not remove the last valid default accidentally.",
+      "Cancellation flow explains access loss, retention, and recovery clearly."
+    ]
+  },
+  "final_ui_contract": {
+    "recommended_direction": "Auto bootstrap prepared decision handoff before /plan.",
+    "content_hierarchy": [
+      "Global filters",
+      "KPI strip",
+      "primary table or board",
+      "inspector pane",
+      "audit activity"
+    ],
+    "block_interactions": [
+      "Keep plan comparison and billing impact preview connected.",
+      "Payment method actions should confirm verification state before changing the default.",
+      "Destructive cancellation paths should preview access loss and recovery windows."
+    ],
+    "button_behaviors": [
+      "Primary buttons advance the main task and stay closest to the active object.",
+      "Plan and payment buttons must surface money impact before commit.",
+      "Secondary buttons preserve context and avoid competing with the main action.",
+      "Destructive buttons require high-contrast labeling and consequence text."
+    ],
+    "modal_behaviors": [
+      "Use modals for destructive confirmation, irreversible billing changes, or short approval steps.",
+      "Use sheets or drawers for supplemental detail that should not wipe current context."
+    ],
+    "notification_behaviors": [
+      "Inline validation appears before toasts for form or input problems.",
+      "Success toasts confirm completion and never carry the only next step.",
+      "Persistent banners are reserved for failed payments, renewal risk, compliance, or account degradation."
+    ],
+    "responsive_strategy": [
+      "Collapse inspectors into drawers on tablet.",
+      "Keep sticky filters above the fold.",
+      "Reduce columns before hiding status information."
+    ],
+    "motion_guidelines": [
+      "Use low motion and reserve transitions for table state, drawers, and confirmations."
+    ],
+    "trust_signals": [
+      "Preview billing impact before plan changes are confirmed.",
+      "Keep renewal, failed payment, and permission state visible near the primary action.",
+      "Use durable confirmation for cancellations and payment method changes."
+    ],
+    "state_matrix": [
+      "empty",
+      "loading",
+      "error",
+      "success",
+      "disabled"
+    ]
+  },
+  "handoff_source": "/Users/rai/Documents/behappy/proxy-digi/plans/260512-2309-api-proxy-implementation/brainstorm/decision-handoff.json",
+  "handoff_status": "ready_for_plan",
+  "product_domain": "general",
+  "primary_jobs": [
+    "change plan with confidence",
+    "update payment details safely",
+    "understand invoices, renewals, and cancellation impact"
+  ],
+  "information_architecture_details": {
+    "navigation_model": "",
+    "entry_points": [],
+    "primary_zones": [],
+    "notes": []
+  },
+  "interaction_contract_details": {
+    "buttons": [],
+    "modals": [],
+    "notifications": [],
+    "state_model": [
+      "empty",
+      "loading",
+      "error",
+      "success",
+      "disabled"
+    ],
+    "contract_notes": [
+      "State model: empty, loading, error, success, disabled"
+    ]
+  }
+}

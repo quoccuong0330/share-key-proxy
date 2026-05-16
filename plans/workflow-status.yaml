@@ -1,0 +1,63 @@
+version: '1.0'
+project_type: maintenance
+track: default
+phase: planning
+status: active
+current_step: planning-ready
+next_action: Run /plan in a fresh session.
+owner: cuongtq
+champions: []
+artifacts:
+  workflow_status: plans/workflow-status.yaml
+  sprint_status: plans/sprint-status.yaml
+  project_context: docs/project-context.md
+  scan_report: plans/project-scan-report.json
+  work_items: plans/work-items.yaml
+  sharded_index: docs/sharded/index.md
+kpi_baseline:
+  adoption_rate: 0.0
+  lead_time_days: 0.0
+  test_pass_rate: 0.0
+  regression_reopen_rate: 0.0
+signals:
+  gate_policy: guided
+  scan_completed: true
+  scan_meaningful: true
+  planning_ready: true
+  readiness_passed: false
+  quality_gate_passed: false
+  lint_passed: false
+  typecheck_passed: false
+  build_passed: false
+  tests_passed: false
+  ui_smoke_passed: false
+  security_passed: false
+  last_reported_commit: 19904357f00096c642c25ace7727a40fe9107fbd
+  last_reported_branch: main
+  last_reported_commit_at: '2026-05-14T11:07:28+00:00'
+  commit_report_path: plans/reports/branches/main/commit-latest.md
+  commit_report_source: status-sync
+  bootstrap_completed_at: ''
+  bootstrap_session_id: ''
+  bootstrap_status: ''
+  bootstrap_actions_run: []
+  bootstrap_report: ''
+  updated_at: '2026-05-16T03:37:08+00:00'
+  scan_mode: deep
+  scan_report: plans/project-scan-report.json
+  last_major_command: /check-readiness
+  last_major_command_at: '2026-05-14T08:39:19+00:00'
+  readiness_report: plans/260512-2309-api-proxy-implementation/reports/readiness-report.json
+  planning_report: plans/260512-2309-api-proxy-implementation/reports/readiness-report.json
+  readiness_scope: medium
+updated_at: '2026-05-16T03:37:08+00:00'
+created_at: '2026-05-14T08:35:31+00:00'
+derived_evidence:
+- current_step=planning-ready -> phase=planning (lifecycle-managed)
+next_action_struct:
+  command: /plan
+  reason: Plan maintenance task with explicit risks.
+  requires_new_session: true
+  session_guidance: Run this step in a fresh session for cleaner context. Use /clear
+    or open a new terminal and run claude --resume.
+lifecycle_state: planning-ready

@@ -1,0 +1,82 @@
+version: '2.0'
+plan_id: 260512-2309-api-proxy-implementation
+active_phase:
+  phase_id: '01'
+  phase_label: Config Admin Token
+  file: plans/260512-2309-api-proxy-implementation/phase-01-config-admin-token.md
+  status: no-checklist
+  checklist_open: 0
+phases:
+- id: '01'
+  label: Config Admin Token
+  status: no-checklist
+- id: '02'
+  label: Anthropic Compatible Routing
+  status: no-checklist
+- id: '03'
+  label: Streaming And Error Contract
+  status: no-checklist
+- id: '04'
+  label: Deploy Domain Runbook
+  status: no-checklist
+- id: '05'
+  label: Validation And Settings
+  status: no-checklist
+progress_pct: 0.0
+updated_at: '2026-05-14T11:07:28+00:00'
+created_at: '2026-05-12T16:52:21+00:00'
+lifecycle:
+  state: planning
+  last_command: ''
+  last_command_at: '2026-05-14T08:39:19+00:00'
+  active_command: ''
+  active_session_id: ''
+gates:
+  code_review_allowed: false
+  git_allowed: false
+  reason: not yet evaluated
+  last_checked_at: ''
+verification:
+  quality_status: pending
+  review_status: pending
+  git_status: pending
+phase_deps:
+  phase-01-config-admin-token:
+    spec_id: phase-01-config-admin-token
+    status: pending
+    blockedBy: []
+    assignee: ''
+    claimed_at: ''
+    file: plans/260512-2309-api-proxy-implementation/phase-01-config-admin-token.md
+  phase-02-anthropic-compatible-routing:
+    spec_id: phase-02-anthropic-compatible-routing
+    status: pending
+    blockedBy:
+    - phase-01-config-admin-token
+    assignee: ''
+    claimed_at: ''
+    file: plans/260512-2309-api-proxy-implementation/phase-02-anthropic-compatible-routing.md
+  phase-03-streaming-and-error-contract:
+    spec_id: phase-03-streaming-and-error-contract
+    status: pending
+    blockedBy:
+    - phase-02-anthropic-compatible-routing
+    assignee: ''
+    claimed_at: ''
+    file: plans/260512-2309-api-proxy-implementation/phase-03-streaming-and-error-contract.md
+  phase-04-deploy-domain-runbook:
+    spec_id: phase-04-deploy-domain-runbook
+    status: pending
+    blockedBy:
+    - phase-03-streaming-and-error-contract
+    assignee: ''
+    claimed_at: ''
+    file: plans/260512-2309-api-proxy-implementation/phase-04-deploy-domain-runbook.md
+  phase-05-validation-and-settings:
+    spec_id: phase-05-validation-and-settings
+    status: pending
+    blockedBy:
+    - phase-04-deploy-domain-runbook
+    assignee: ''
+    claimed_at: ''
+    file: plans/260512-2309-api-proxy-implementation/phase-05-validation-and-settings.md

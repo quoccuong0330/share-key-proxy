@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { findPrice, calculateCost, addUsageLog } = require('./keys-store');
 
 function anthropicError(res, status, type, message) {
   return res.status(status).json({ type: 'error', error: { type, message } });
@@ -48,6 +49,10 @@ function mapAnthropicToOpenAI(anthropicBody) {
 
 function mapOpenAIToAnthropic(openaiResponse) {
   const choice = openaiResponse.choices?.[0];
+  const usage = {
+    input_tokens: openaiResponse.usage?.prompt_tokens || 0,
+    output_tokens: openaiResponse.usage?.completion_tokens || 0
+  };
   if (!choice) {
     return {
       id: openaiResponse.id || 'msg_unknown',
@@ -56,10 +61,7 @@ function mapOpenAIToAnthropic(openaiResponse) {
       content: [{ type: 'text', text: '' }],
       model: openaiResponse.model || 'unknown',
       stop_reason: 'end_turn',
-      usage: {
-        input_tokens: openaiResponse.usage?.prompt_tokens || 0,
-        output_tokens: openaiResponse.usage?.completion_tokens || 0
-      }
+      usage
     };
   }
 
@@ -77,7 +79,7 @@ function mapOpenAIToAnthropic(openaiResponse) {
   };
 }
 
-async function handleAnthropicMessages(req, res, upstreamBaseUrl, upstreamToken) {
+async function handleAnthropicMessages(req, res, upstream) {
   try {
     const policyResult = applyModelPolicy(req.body || {}, req.proxyKey);
     if (!policyResult.ok) {
@@ -86,11 +88,11 @@ async function handleAnthropicMessages(req, res, upstreamBaseUrl, upstreamToken)
 
     const openaiPayload = mapAnthropicToOpenAI(policyResult.body);
     const response = await axios.post(
-      `${upstreamBaseUrl.replace(/\/$/, '')}/chat/completions`,
+      `${upstream.base_url.replace(/\/$/, '')}/chat/completions`,
       openaiPayload,
       {
         headers: {
-          Authorization: `Bearer ${upstreamToken}`,
+          Authorization: `Bearer ${upstream.auth_token}`,
           'Content-Type': 'application/json'
         },
         responseType: openaiPayload.stream ? 'stream' : 'json',
@@ -108,7 +110,21 @@ async function handleAnthropicMessages(req, res, upstreamBaseUrl, upstreamToken)
       return;
     }
 
-    res.json(mapOpenAIToAnthropic(response.data));
+    const anthropicResponse = mapOpenAIToAnthropic(response.data);
+    const usage = response.data.usage || {};
+    const price = await findPrice(upstream.id, response.data.model || openaiPayload.model);
+    const cost = calculateCost(usage, price);
+    await addUsageLog({
+      key_id: req.proxyKey.id,
+      provider_id: upstream.id,
+      owner: req.proxyKey.owner,
+      model: response.data.model || openaiPayload.model,
+      prompt_tokens: usage.prompt_tokens,
+      completion_tokens: usage.completion_tokens,
+      total_tokens: usage.total_tokens,
+      cost
+    });
+    res.json(anthropicResponse);
   } catch (error) {
     console.error('Anthropic messages proxy error:', error.message);
 

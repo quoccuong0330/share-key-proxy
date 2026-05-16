@@ -1,0 +1,173 @@
+{
+  "topic": "Multi-user API proxy with JWT authentication and rate limiting",
+  "chosen_direction": "Simple REST proxy with JWT auth, PostgreSQL user management, Redis rate limiting, full observability from day 1",
+  "requirements_summary": {
+    "WHO": "Multiple users accessing shared proxy; maintained by you (selfhost)",
+    "WHAT": "Proxy server forwarding requests to https://vip.digishop.work/v1 with JWT auth + auto-retry",
+    "WHEN": "No specific deadline; production-ready from day 1",
+    "WHERE": "Selfhosted via Docker + Docker Compose",
+    "WHY": "Share single API key with multiple users securely",
+    "HOW": "JWT authentication, auto-retry on failure, Node.js + Express, PostgreSQL user storage"
+  },
+  "scope_flags": ["api", "auth", "db", "infra"],
+  "db_design_options": [
+    {
+      "name": "PostgreSQL with Minimal Schema",
+      "schema_notes": "Normalized (3NF) with users + request_logs tables. UUID primary keys, indexes on username/email.",
+      "pros": ["Simple, clean schema", "PostgreSQL in Docker is battle-tested", "UUID prevents ID collision", "Easy to extend"],
+      "cons": ["Need to manage PostgreSQL container", "Slightly more setup than SQLite", "Request logs can grow large"],
+      "chosen": true
+    },
+    {
+      "name": "MongoDB Document Store",
+      "schema_notes": "Denormalized documents with embedded request logs (last 100)",
+      "pros": ["Flexible schema", "Embedded logs = no JOINs", "JSON-native"],
+      "cons": ["Document size grows", "No referential integrity", "Overkill for simple user table"],
+      "chosen": false
+    },
+    {
+      "name": "SQLite with File Storage",
+      "schema_notes": "Same schema as PostgreSQL but file-based",
+      "pros": ["Zero setup", "No container needed", "Easy backups"],
+      "cons": ["Not suitable for high concurrency", "Limited to single server", "Write locks bottleneck"],
+      "chosen": false
+    }
+  ],
+  "api_contract_draft": {
+    "style": "REST",
+    "versioning": "URL path /v1/",
+    "auth_pattern": "Bearer JWT (no expiry)",
+    "pagination": "N/A",
+    "key_endpoints": [
+      { "method": "POST", "path": "/v1/auth/register", "description": "Create user account" },
+      { "method": "POST", "path": "/v1/auth/login", "description": "Login, get JWT token" },
+      { "method": "GET", "path": "/v1/proxy/*", "description": "Forward GET requests to target API" },
+      { "method": "POST", "path": "/v1/proxy/*", "description": "Forward POST requests to target API" },
+      { "method": "PUT", "path": "/v1/proxy/*", "description": "Forward PUT requests to target API" },
+      { "method": "DELETE", "path": "/v1/proxy/*", "description": "Forward DELETE requests to target API" },
+      { "method": "GET", "path": "/v1/usage", "description": "Show user's rate limit status" },
+      { "method": "GET", "path": "/v1/health", "description": "Health check endpoint" }
+    ],
+    "user_rationale": "Simple REST proxy chosen for transparency and ease of use. Users just replace base URL."
+  },
+  "risk_matrix": [
+    {
+      "risk": "API Key Exposure in Logs/Errors",
+      "likelihood": 3,
+      "impact": 3,
+      "score": 9,
+      "category": "Critical",
+      "mitigation": "Implement key redaction in all logs. Never log raw API key. Use structured logging with sanitization. Test log output before deploy."
+    },
+    {
+      "risk": "Rate Limiting Bypass / Cost Explosion",
+      "likelihood": 3,
+      "impact": 3,
+      "score": 9,
+      "category": "Critical",
+      "mitigation": "Implement per-user rate limiting (Redis-backed). Add global rate limit as fallback. Monitor API usage daily. Set up cost alerts."
+    },
+    {
+      "risk": "JWT Secret Compromise",
+      "likelihood": 2,
+      "impact": 3,
+      "score": 6,
+      "category": "Critical",
+      "mitigation": "Use strong random secret (256-bit min). Store in env var only. Document secret rotation procedure. Implement rotation before launch."
+    },
+    {
+      "risk": "Database Connection Pool Exhaustion",
+      "likelihood": 2,
+      "impact": 2,
+      "score": 4,
+      "category": "High",
+      "mitigation": "Configure connection pool (max 20). Add health check monitoring. Set up alerts for connection count > 15. Test under load."
+    },
+    {
+      "risk": "No Graceful Shutdown / Data Loss",
+      "likelihood": 2,
+      "impact": 2,
+      "score": 4,
+      "category": "High",
+      "mitigation": "Implement SIGTERM handler with 30s timeout. Test Docker stop behavior. Add pre-shutdown health check."
+    }
+  ],
+  "persona_findings": {
+    "security": [
+      "JWT Secret Management: Use strong random JWT secret (min 256-bit), store in env var, rotate periodically",
+      "API Key Exposure in Logs: Never log the actual API key. Redact in request_logs. Use separate audit logs with restricted access",
+      "Rate Limiting Bypass: Implement per-user rate limiting (100 req/hour) + global rate limiting. Use Redis for distributed counters"
+    ],
+    "devops": [
+      "Database Connection Pool Exhaustion: Use pg with connection pool (max 20). Add health check. Monitor active connections",
+      "No Graceful Shutdown: Implement SIGTERM handler with 30s timeout. Close DB pool properly",
+      "Missing Observability: Add structured logging (Winston/Pino), Prometheus metrics, health check endpoint"
+    ],
+    "end_user": [
+      "Unclear Error Messages: Return clear error responses with proper HTTP status codes (401, 429, 502, 503)",
+      "No Usage Visibility: Add GET /v1/usage endpoint. Include rate limit headers in responses",
+      "Registration Flow Unclear: Document registration flow. Add GET /v1/auth/info endpoint"
+    ],
+    "yagni": [
+      "Request Logs Table Might Be Overkill: Start without request logs. Use stdout logs. Add DB logging only if needed",
+      "Refresh Token Pattern Too Complex: Single JWT with 24-hour expiry simpler than access+refresh tokens",
+      "Prometheus Metrics Premature: Start with basic health check + structured logs. Add Prometheus when needed"
+    ],
+    "competitor": [
+      "Industry Pattern: OpenAI-Compatible Proxies: Consider adding OpenAI-compatible endpoints for easier adoption",
+      "Existing Solution: Cloudflare Workers AI Gateway: Evaluate before building custom. Self-hosted justified if need full control",
+      "Standard Pattern: API Key Rotation: Plan for key rotation from day 1. Store in env var. Document rotation procedure"
+    ]
+  },
+  "contradictions_resolved": [
+    {
+      "personas": ["security", "yagni"],
+      "conflict": "JWT expiry strategy",
+      "resolution": "Token with no expiry (user choice)",
+      "rationale": "Simpler for small user base, can add expiry later if needed"
+    },
+    {
+      "personas": ["devops", "yagni"],
+      "conflict": "Observability level",
+      "resolution": "Full observability from day 1 (user choice)",
+      "rationale": "Production-ready from start, easier to debug issues"
+    }
+  ],
+  "acceptance_criteria": [
+    "All HTTP methods (GET, POST, PUT, DELETE) forwarded correctly",
+    "JWT authentication working (register, login, token validation)",
+    "Rate limiting enforced per-user (100 req/hour) and globally (1000 req/hour)",
+    "Auto-retry on transient failures",
+    "Clear error messages with proper HTTP status codes",
+    "API key never exposed in logs",
+    "Response latency < 500ms (p95)",
+    "Graceful shutdown within 30s",
+    "Health check endpoint responding",
+    "Prometheus metrics scraped successfully"
+  ],
+  "architecture_decisions": [
+    "Node.js + Express for proxy server (simple, widely understood)",
+    "PostgreSQL for user management (production-ready, easy to scale)",
+    "Redis for rate limiting (distributed counters)",
+    "Docker Compose for orchestration (selfhost deployment)",
+    "JWT with no expiry (user choice for simplicity)",
+    "Structured logging with key redaction (Winston/Pino)",
+    "Prometheus metrics for observability",
+    "Connection pooling (max 20) to prevent DB exhaustion",
+    "SIGTERM handler for graceful shutdown"
+  ],
+  "dependencies": [
+    "Node.js 20+",
+    "PostgreSQL 14+",
+    "Redis 7+",
+    "Docker + Docker Compose",
+    "Express.js",
+    "pg (PostgreSQL client)",
+    "jsonwebtoken (JWT)",
+    "bcrypt (password hashing)",
+    "winston or pino (logging)",
+    "prom-client (Prometheus metrics)",
+    "ioredis (Redis client)"
+  ],
+  "test_strategy": "Unit tests: auth, rate limiting, key redaction. Integration tests: mock target API, full request flow. Load tests: verify rate limiting + connection pooling. Security tests: JWT tampering, key exposure in logs. E2E tests: Docker Compose stack, full deployment."
+}

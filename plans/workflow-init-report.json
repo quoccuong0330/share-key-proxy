@@ -1,0 +1,91 @@
+{
+  "project_root": "/Users/rai/Documents/behappy/proxy-digi",
+  "detected_case": "partial-or-invalid",
+  "confidence": 0.75,
+  "evidence": [
+    "artifact_count=1/5",
+    "existing_artifacts=work_items",
+    "missing_artifacts=workflow_status,scan_report,project_context,sharded_index",
+    "has_source=True",
+    "source_dir_hint:src",
+    "workflow-status.yaml: file missing \u2192 fix: /workflow-init --apply",
+    "project-scan-report.json: file missing \u2192 fix: /document-project",
+    "project-context.md: file missing \u2192 fix: /workflow-init --apply",
+    "docs/sharded/index.md: file missing \u2192 fix: /workflow-init --apply"
+  ],
+  "recommended_project_type": "maintenance",
+  "effective_project_type": "maintenance",
+  "recommended_next_actions": [
+    "Run /workflow-init --apply --force --project-type maintenance",
+    "Run /workflow-status --sync",
+    "Run /check-readiness --scope medium before /cook"
+  ],
+  "execution_profile": "apply-custom",
+  "apply_performed": true,
+  "next_action": "Run /workflow-status --sync.",
+  "next_action_struct": {
+    "command": "/workflow-status --sync",
+    "reason": "Refresh workflow state before discovery.",
+    "requires_new_session": false,
+    "session_guidance": "Same session is acceptable for this step."
+  },
+  "interview": [],
+  "user_confirmation": "assumed-explicit-apply",
+  "statuses": {
+    "plans/workflow-status.yaml": "updated",
+    "plans/project-scan-report.json": "updated",
+    "plans/project-scan-report.yaml": "updated",
+    "docs/project-context.md": "updated",
+    "docs/sharded/index.md": "updated",
+    "CLAUDE.md": "created",
+    "AGENTS.md": "created",
+    ".claude/settings.local.json": "created",
+    ".gitignore (.claude/settings.local.json)": "updated",
+    ".gitignore (CLAUDE.md)": "updated",
+    ".gitignore (AGENTS.md)": "updated",
+    "plans/work-items.yaml": "updated",
+    "plans/260512-2309-api-proxy-implementation/context/project-context-snapshot.md": "updated",
+    "plans/260512-2309-api-proxy-implementation/brainstorm/decision-handoff.json": "updated"
+  },
+  "workflow_init_report": "plans/workflow-init-report.json",
+  "workflow_init_report_yaml": "plans/workflow-init-report.yaml",
+  "markdown_report": null,
+  "generated_at": "2026-05-14T08:35:31+00:00",
+  "brainstorm_recommendation": {
+    "recommended_depth": "deep",
+    "recommended_session_pattern": "multi-loop (>=3 options + tradeoffs + risk convergence)",
+    "score": 6,
+    "confidence": 0.9,
+    "factors": [
+      "[+3] requirement_signal=missing",
+      "[+2] detected_case=partial-or-invalid",
+      "[+1] project_type=maintenance"
+    ],
+    "requirement_signal": {
+      "status": "missing",
+      "signals_found": [],
+      "missing_signals": [
+        "problem_statement",
+        "scope",
+        "constraints"
+      ]
+    },
+    "required_clarifications": [
+      "Confirm explicit problem statement and expected business outcome.",
+      "Confirm in-scope vs out-of-scope boundaries for first delivery.",
+      "Confirm constraints: timeline, compliance, risk tolerance, and budget."
+    ],
+    "requires_user_confirmation": true,
+    "decision_status": "pending_user_confirmation",
+    "policy": "advisory-only",
+    "generated_at": "2026-05-14T08:35:31+00:00"
+  },
+  "work_items_registry": "plans/work-items.yaml",
+  "active_work_item_id": "260512-2309-api-proxy-implementation",
+  "active_work_item_path": "plans/260512-2309-api-proxy-implementation",
+  "legacy_migration": {
+    "migrated": 0,
+    "active_item_id": "260512-2309-api-proxy-implementation",
+    "items": 1
+  }
+}
