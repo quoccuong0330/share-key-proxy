@@ -79,6 +79,158 @@ function mapOpenAIToAnthropic(openaiResponse) {
   };
 }
 
+function mapFinishReason(reason) {
+  if (reason === 'length') {
+    return 'max_tokens';
+  }
+  return 'end_turn';
+}
+
+function writeAnthropicSse(res, event, data) {
+  if (res.writableEnded || res.destroyed) {
+    return;
+  }
+  res.write(`event: ${event}\n`);
+  res.write(`data: ${JSON.stringify(data)}\n\n`);
+}
+
+function startAnthropicSse(res, messageId, model) {
+  writeAnthropicSse(res, 'message_start', {
+    type: 'message_start',
+    message: {
+      id: messageId,
+      type: 'message',
+      role: 'assistant',
+      model,
+      content: [],
+      stop_reason: null,
+      stop_sequence: null,
+      usage: { input_tokens: 0, output_tokens: 0 }
+    }
+  });
+  writeAnthropicSse(res, 'content_block_start', {
+    type: 'content_block_start',
+    index: 0,
+    content_block: { type: 'text', text: '' }
+  });
+}
+
+function stopAnthropicSse(res, usage = {}, stopReason = 'end_turn') {
+  writeAnthropicSse(res, 'content_block_stop', {
+    type: 'content_block_stop',
+    index: 0
+  });
+  writeAnthropicSse(res, 'message_delta', {
+    type: 'message_delta',
+    delta: { stop_reason: stopReason, stop_sequence: null },
+    usage: { output_tokens: usage.completion_tokens || 0 }
+  });
+  writeAnthropicSse(res, 'message_stop', { type: 'message_stop' });
+  if (!res.writableEnded && !res.destroyed) {
+    res.end();
+  }
+}
+
+function pipeOpenAIStreamToAnthropic(response, res, fallbackModel) {
+  res.status(response.status);
+  res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
+  res.setHeader('Cache-Control', 'no-cache');
+  res.setHeader('Connection', 'keep-alive');
+  res.flushHeaders?.();
+
+  let buffer = '';
+  let messageStarted = false;
+  let stopped = false;
+  let messageId = `msg_${Date.now()}_${Math.random().toString(16).slice(2)}`;
+  let model = fallbackModel;
+  let usage = {};
+  let stopReason = 'end_turn';
+
+  function ensureStarted() {
+    if (!messageStarted) {
+      messageStarted = true;
+      startAnthropicSse(res, messageId, model);
+    }
+  }
+
+  function stopOnce() {
+    if (!stopped) {
+      stopped = true;
+      ensureStarted();
+      stopAnthropicSse(res, usage, stopReason);
+    }
+  }
+
+  response.data.on('data', (chunk) => {
+    buffer += chunk.toString('utf8');
+    const lines = buffer.split('\n');
+    buffer = lines.pop() || '';
+
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed.startsWith('data:')) {
+        continue;
+      }
+
+      const payload = trimmed.slice(5).trim();
+      if (payload === '[DONE]') {
+        stopOnce();
+        return;
+      }
+
+      try {
+        const json = JSON.parse(payload);
+        messageId = json.id || messageId;
+        model = json.model || model;
+        ensureStarted();
+
+        const choice = json.choices?.[0];
+        const text = choice?.delta?.content;
+        if (text !== undefined) {
+          writeAnthropicSse(res, 'content_block_delta', {
+            type: 'content_block_delta',
+            index: 0,
+            delta: { type: 'text_delta', text }
+          });
+        }
+
+        if (choice?.finish_reason) {
+          stopReason = mapFinishReason(choice.finish_reason);
+        }
+        if (json.usage) {
+          usage = json.usage;
+        }
+      } catch (error) {
+        console.error('OpenAI stream parse error:', error.message);
+        writeAnthropicSse(res, 'error', {
+          type: 'error',
+          error: { type: 'api_error', message: 'Upstream stream parse failed' }
+        });
+        if (!res.writableEnded && !res.destroyed) {
+          res.end();
+        }
+        response.data.destroy();
+        return;
+      }
+    }
+  });
+
+  response.data.on('end', () => stopOnce());
+  response.data.on('error', (error) => {
+    console.error('OpenAI stream error:', error.message);
+    if (!stopped) {
+      stopped = true;
+      writeAnthropicSse(res, 'error', {
+        type: 'error',
+        error: { type: 'api_error', message: 'Upstream stream failed' }
+      });
+      if (!res.writableEnded && !res.destroyed) {
+        res.end();
+      }
+    }
+  });
+}
+
 async function handleAnthropicMessages(req, res, upstream) {
   try {
     const policyResult = applyModelPolicy(req.body || {}, req.proxyKey);
@@ -101,11 +253,7 @@ async function handleAnthropicMessages(req, res, upstream) {
     );
 
     if (openaiPayload.stream) {
-      res.status(response.status);
-      res.setHeader('Content-Type', response.headers['content-type'] || 'text/event-stream');
-      res.setHeader('Cache-Control', 'no-cache');
-      res.setHeader('Connection', 'keep-alive');
-      response.data.pipe(res);
+      pipeOpenAIStreamToAnthropic(response, res, openaiPayload.model);
       req.on('close', () => response.data.destroy());
       return;
     }
