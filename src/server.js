@@ -2,6 +2,7 @@ const express = require('express');
 const { findKey, findProvider, initKeysStore } = require('./keys-store');
 const { createAdminRouter, createAdminApiRouter } = require('./admin-routes');
 const { handleAnthropicMessages, handleCountTokens, handleUnsupported, anthropicError } = require('./anthropic-adapter');
+const { handleOpenAIChatCompletions, handleOpenAIModels } = require('./openai-routes');
 
 const app = express();
 
@@ -87,6 +88,14 @@ app.use('/public', express.static('public'));
 
 app.post('/v1/messages', authenticateProxyKey, (req, res) => {
   handleAnthropicMessages(req, res, req.provider);
+});
+
+app.get('/v1/models', authenticateProxyKey, (req, res) => {
+  handleOpenAIModels(req, res, req.provider);
+});
+
+app.post('/v1/chat/completions', authenticateProxyKey, (req, res) => {
+  handleOpenAIChatCompletions(req, res, req.provider);
 });
 
 app.post('/v1/messages/count_tokens', authenticateProxyKey, handleCountTokens);
